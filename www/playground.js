@@ -16,9 +16,14 @@ const ocamlPlaygroundUrl = (code) =>
 const domContentLoaded =
   new Promise(
     (resolve) => {
+      let unloaded = false;
+      addEventListener(
+        "beforeunload",
+        () => { unloaded = true; },
+      );
       document.addEventListener(
         "DOMContentLoaded",
-        resolve
+        () => { if (!unloaded) resolve(); },
       );
     }
   );
