@@ -13,11 +13,23 @@ const ocamlPlaygroundUrl = (code) =>
     "https://ocaml.org/play" :
     `https://ocaml.org/play#code=${stringToUTF8Base64(code)}`
 
-function writeOutput(s) {
+const domContentLoaded =
+  new Promise(
+    (resolve) => {
+      document.addEventListener(
+        "DOMContentLoaded",
+        resolve
+      );
+    }
+  );
+
+async function writeOutput(s) {
+  // we might run before the DOM is loaded (and the DOM may never load before redirecting!)
+  await domContentLoaded;
   document.getElementById("output").innerHTML = s;
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+function doRedirect() {
   writeOutput("Redirecting...");
 
   const playground = new URLSearchParams(window.location.search).get("playground");
@@ -39,4 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   window.location.replace(target);
-});
+}
+
+// don't wait for the DOM -- we don't need it
+doRedirect();
